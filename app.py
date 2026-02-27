@@ -71,7 +71,7 @@ def home():
     data = {
         "title": "SYSTEM BREACH: READY",
         "status": "WAITING FOR TARGET",
-        "version": "V19: Web Extractor"
+        "version": "REELSHORT DOWNLOADER"
     }
     
     result = None
@@ -97,3 +97,4 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
