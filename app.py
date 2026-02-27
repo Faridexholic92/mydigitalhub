@@ -6,11 +6,12 @@ app = Flask(__name__)
 def home():
     # Kau boleh letak logik Python kat sini nanti
     data = {
-        "title": "Faridexholic Digital Hub",
+        "title": "Faridexholic Will Comeback :D",
         "status": "Online",
-        "version": "V18: Owl Edition"
+        "version": ""Mess with the best, die like the rest"
     }
     return render_template('index.html', data=data)
 
 if __name__ == '__main__':
+
     app.run(debug=True)
