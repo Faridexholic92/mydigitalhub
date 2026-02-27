@@ -1,23 +1,162 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Faridexholic Digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faridexholic Red Zone</title>
     <style>
-        body { background: #121212; color: #00ff00; font-family: monospace; padding: 50px; }
-        .box { border: 1px solid #00ff00; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; }
-        h1 { text-align: center; }
-        .status { color: gold; font-weight: bold; }
-        .btn { display: block; background: #00ff00; color: #000; text-align: center; padding: 10px; text-decoration: none; margin-top: 20px; font-weight: bold; }
+        /* Reset asas */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden; /* Hilangkan scrollbar */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Canvas untuk Matrix Rain */
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0; /* Duduk belakang sekali */
+        }
+
+        /* Kotak Content (Terapung atas matrix) */
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1; /* Duduk depan */
+            text-align: center;
+            background: rgba(0, 0, 0, 0.85); /* Hitam telus sikit supaya tulisan jelas */
+            padding: 40px;
+            border: 2px solid #ff0000; /* Border Merah */
+            box-shadow: 0 0 20px #ff0000; /* Glow Merah */
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        /* Tajuk Utama */
+        h1 {
+            color: #ff0000;
+            text-transform: uppercase;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff0000;
+            letter-spacing: 2px;
+        }
+
+        /* Quote Gempak */
+        .quote {
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Info Status */
+        .info {
+            color: #ff4444; /* Merah cerah sikit */
+            font-size: 1em;
+            margin: 5px 0;
+            border-top: 1px solid #550000;
+            padding-top: 10px;
+        }
+
+        /* Butang */
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: #ff0000;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #fff;
+            color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+        }
     </style>
 </head>
 <body>
-    <div class="box">
+
+    <canvas id="matrix"></canvas>
+
+    <div class="overlay">
         <h1>{{ data.title }}</h1>
-        <hr>
-        <p>System Status: <span class="status">{{ data.status }}</span></p>
-        <p>Active Script: {{ data.version }}</p>
-        <a href="#" class="btn">VIEW SCRIPTS</a>
+        <p class="quote">"MESS WITH THE BEST, DIE LIKE THE REST"</p>
+        
+        <div class="info">
+            <p>[ SYSTEM STATUS: <span style="color:#0f0;">ONLINE</span> ]</p>
+            <p>[ MODULE: {{ data.version }} ]</p>
+        </div>
+
+        <a href="#" class="btn">ACCESS TERMINAL</a>
     </div>
+
+    <script>
+        // Setup Canvas
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // Set Full Screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Huruf-huruf Matrix (Nombor & Abjad)
+        const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const matrix = letters.split('');
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize; // Kira berapa lajur
+
+        // Array untuk simpan posisi setiap titisan hujan
+        const drops = [];
+        for(let x = 0; x < columns; x++)
+            drops[x] = 1;
+
+        // Fungsi Melukis Hujan
+        function draw() {
+            // Tutup skrin dengan warna hitam separa telus (supaya nampak efek ekor)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Set warna tulisan & font
+            ctx.fillStyle = '#ff0000'; // WARNA MERAH (Red Alert)
+            ctx.font = fontSize + 'px Courier New';
+
+            // Loop untuk setiap titisan
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Reset titisan ke atas secara rawak
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+                    drops[i] = 0;
+
+                // Gerakkan titisan ke bawah
+                drops[i]++;
+            }
+        }
+
+        // Jalankan animasi (35ms kelajuan)
+        setInterval(draw, 35);
+
+        // Resize canvas kalau user ubah saiz window
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
