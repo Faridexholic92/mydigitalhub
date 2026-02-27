@@ -6,7 +6,7 @@ app = Flask(__name__)
 def home():
     # Kau boleh letak logik Python kat sini nanti
     data = {
-        "title": "Faridexholic Will Comeback :D",
+        "title": "Faridexholic Will Come back :D",
         "status": "Online",
         "version": "Mess with the best, die like the rest"
     }
@@ -15,4 +15,5 @@ def home():
 if __name__ == '__main__':
 
     app.run(debug=True)
+
 
