@@ -41,7 +41,7 @@
             <h2 style="color:white;">TARGET: {{ result.title }}</h2>
             <p style="color:#aaa; font-size:0.9em;">{{ result.synopsis[:150] }}...</p>
             
-            <h3 style="border-bottom: 1px solid red;">EPISODES LIST (CLICK TO GET M3U8)</h3>
+            <h3 style="border-bottom: 1px solid red;">EPISODES LIST</h3>
             <div class="ep-grid">
                 {% for ep in result.episodes %}
                 <form method="POST" target="_blank" style="display:inline;">
