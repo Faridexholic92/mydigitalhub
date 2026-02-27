@@ -8,10 +8,11 @@ def home():
     data = {
         "title": "Faridexholic Will Comeback :D",
         "status": "Online",
-        "version": ""Mess with the best, die like the rest"
+        "version": "Mess with the best, die like the rest"
     }
     return render_template('index.html', data=data)
 
 if __name__ == '__main__':
 
     app.run(debug=True)
+
