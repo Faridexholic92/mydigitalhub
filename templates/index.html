@@ -3,160 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faridexholic Red Zone</title>
+    <title>Faridexholic Extractor</title>
     <style>
-        /* Reset asas */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: black;
-            overflow: hidden; /* Hilangkan scrollbar */
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        /* Canvas untuk Matrix Rain */
-        canvas {
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0; /* Duduk belakang sekali */
-        }
-
-        /* Kotak Content (Terapung atas matrix) */
-        .overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1; /* Duduk depan */
-            text-align: center;
-            background: rgba(0, 0, 0, 0.85); /* Hitam telus sikit supaya tulisan jelas */
-            padding: 40px;
-            border: 2px solid #ff0000; /* Border Merah */
-            box-shadow: 0 0 20px #ff0000; /* Glow Merah */
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        /* Tajuk Utama */
-        h1 {
-            color: #ff0000;
-            text-transform: uppercase;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #ff0000;
-            letter-spacing: 2px;
-        }
-
-        /* Quote Gempak */
-        .quote {
-            color: #fff;
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        /* Info Status */
-        .info {
-            color: #ff4444; /* Merah cerah sikit */
-            font-size: 1em;
-            margin: 5px 0;
-            border-top: 1px solid #550000;
-            padding-top: 10px;
-        }
-
-        /* Butang */
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 30px;
-            background: #ff0000;
-            color: black;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            background: #fff;
-            color: #ff0000;
-            box-shadow: 0 0 15px #ff0000;
-        }
+        body { margin: 0; background: black; font-family: 'Courier New', monospace; color: #ff0000; overflow-x: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
+        .container { max-width: 800px; margin: 50px auto; padding: 20px; border: 1px solid #ff0000; box-shadow: 0 0 20px #ff0000; background: rgba(0,0,0,0.9); }
+        h1 { text-align: center; text-shadow: 0 0 10px red; }
+        input[type="text"] { width: 70%; padding: 10px; background: #111; border: 1px solid #ff0000; color: #0f0; font-family: monospace; }
+        button { padding: 10px 20px; background: #ff0000; color: black; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: white; }
+        .result-box { margin-top: 20px; border-top: 1px dashed #ff0000; padding-top: 20px; }
+        .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 10px; }
+        .ep-btn { background: #111; border: 1px solid #ff0000; color: #ff0000; padding: 10px; text-align: center; text-decoration: none; display: block; }
+        .ep-btn:hover { background: #ff0000; color: black; }
+        .error { color: yellow; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
-
     <canvas id="matrix"></canvas>
-
-    <div class="overlay">
+    <div class="container">
         <h1>{{ data.title }}</h1>
-        <p class="quote">"MESS WITH THE BEST, DIE LIKE THE REST"</p>
+        <p style="text-align:center;">[ MODULE: {{ data.version }} ]</p>
         
-        <div class="info">
-            <p>[ SYSTEM STATUS: <span style="color:#0f0;">ONLINE</span> ]</p>
-            <p>[ MODULE: {{ data.version }} ]</p>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <form method="POST">
+                <input type="text" name="url" placeholder="PASTE REELSHORT MOVIE URL HERE..." required>
+                <button type="submit">HACK</button>
+            </form>
         </div>
 
-        <a href="#" class="btn">ACCESS TERMINAL</a>
+        {% if error %}
+        <div class="error">>> ERROR: {{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result-box">
+            <h2 style="color:white;">TARGET: {{ result.title }}</h2>
+            <p style="color:#aaa; font-size:0.9em;">{{ result.synopsis[:150] }}...</p>
+            
+            <h3 style="border-bottom: 1px solid red;">EPISODES LIST (CLICK TO GET M3U8)</h3>
+            <div class="ep-grid">
+                {% for ep in result.episodes %}
+                <form method="POST" target="_blank" style="display:inline;">
+                    <input type="hidden" name="api_url" value="{{ ep.api_url }}">
+                    <button type="submit" class="ep-btn">EP {{ ep.num }}</button>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <script>
-        // Setup Canvas
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-
-        // Set Full Screen
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
-        // Huruf-huruf Matrix (Nombor & Abjad)
-        const letters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const letters = '0123456789ABCDEF';
         const matrix = letters.split('');
-
         const fontSize = 16;
-        const columns = canvas.width / fontSize; // Kira berapa lajur
-
-        // Array untuk simpan posisi setiap titisan hujan
+        const columns = canvas.width / fontSize;
         const drops = [];
-        for(let x = 0; x < columns; x++)
-            drops[x] = 1;
-
-        // Fungsi Melukis Hujan
+        for(let x = 0; x < columns; x++) drops[x] = 1;
         function draw() {
-            // Tutup skrin dengan warna hitam separa telus (supaya nampak efek ekor)
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Set warna tulisan & font
-            ctx.fillStyle = '#ff0000'; // WARNA MERAH (Red Alert)
+            ctx.fillStyle = '#ff0000';
             ctx.font = fontSize + 'px Courier New';
-
-            // Loop untuk setiap titisan
             for(let i = 0; i < drops.length; i++) {
                 const text = matrix[Math.floor(Math.random() * matrix.length)];
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                // Reset titisan ke atas secara rawak
-                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975)
-                    drops[i] = 0;
-
-                // Gerakkan titisan ke bawah
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-
-        // Jalankan animasi (35ms kelajuan)
         setInterval(draw, 35);
-
-        // Resize canvas kalau user ubah saiz window
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
     </script>
 </body>
 </html>
