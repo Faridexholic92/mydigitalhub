@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <title>Faridexholic Digital</title>
+    <style>
+        body { background: #121212; color: #00ff00; font-family: monospace; padding: 50px; }
+        .box { border: 1px solid #00ff00; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; }
+        h1 { text-align: center; }
+        .status { color: gold; font-weight: bold; }
+        .btn { display: block; background: #00ff00; color: #000; text-align: center; padding: 10px; text-decoration: none; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>{{ data.title }}</h1>
+        <hr>
+        <p>System Status: <span class="status">{{ data.status }}</span></p>
+        <p>Active Script: {{ data.version }}</p>
+        <a href="#" class="btn">VIEW SCRIPTS</a>
+    </div>
+</body>
+</html>
