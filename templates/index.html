@@ -12,7 +12,7 @@
             text-align: center; 
             margin: 0; 
             padding: 20px; 
-            overflow: hidden; /* Elakkan scrollbar untuk canvas matrix */
+            overflow: auto; /* Membenarkan scrollbar jika senarai episod panjang */
         }
         
         /* Canvas Matrix diletak di latar belakang */
@@ -35,6 +35,16 @@
             position: relative;
         }
         
+        /* Gaya untuk logo baru */
+        .logo-img {
+            max-width: 250px; 
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(170, 0, 255, 0.6); /* Kesan glow ungu sikit */
+        }
+
         input[type="text"] { width: 80%; padding: 10px; background: #000; color: #00ff00; border: 1px solid #00ff00; margin-bottom: 15px; }
         .btn-submit { background-color: #00ff00; color: #000; padding: 10px 20px; border: none; cursor: pointer; font-weight: bold; }
         .btn-submit:hover { background-color: #00cc00; }
@@ -56,6 +66,8 @@
     <canvas id="matrix"></canvas>
 
     <div class="container">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Faridexholic Logo" class="logo-img">
+        
         <h1>🦉 {{ data.title }}</h1>
         <p>Status: <strong>{{ data.status }}</strong></p>
         <p>System: <code>{{ data.version }}</code></p>
