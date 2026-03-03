@@ -1,40 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faridexholic Extractor</title>
+    <title>{{ data.title }}</title>
     <style>
-        body { margin: 0; background: black; font-family: 'Courier New', monospace; color: #ff0000; overflow-x: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.3; }
-        .container { max-width: 800px; margin: 50px auto; padding: 20px; border: 1px solid #ff0000; box-shadow: 0 0 20px #ff0000; background: rgba(0,0,0,0.9); }
-        h1 { text-align: center; text-shadow: 0 0 10px red; }
-        input[type="text"] { width: 70%; padding: 10px; background: #111; border: 1px solid #ff0000; color: #0f0; font-family: monospace; }
-        button { padding: 10px 20px; background: #ff0000; color: black; border: none; font-weight: bold; cursor: pointer; }
-        button:hover { background: white; }
-        .result-box { margin-top: 20px; border-top: 1px dashed #ff0000; padding-top: 20px; }
-        .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 10px; }
-        .ep-btn { background: #111; border: 1px solid #ff0000; color: #ff0000; padding: 10px; text-align: center; text-decoration: none; display: block; }
-        .ep-btn:hover { background: #ff0000; color: black; }
-        .error { color: yellow; text-align: center; margin-top: 10px; }
+        body { background-color: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; border: 1px solid #00ff00; padding: 20px; box-shadow: 0 0 10px #00ff00; }
+        input[type="text"] { width: 80%; padding: 10px; background: #000; color: #00ff00; border: 1px solid #00ff00; margin-bottom: 15px; }
+        .btn-submit { background-color: #00ff00; color: #000; padding: 10px 20px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-submit:hover { background-color: #00cc00; }
+        .error { color: red; font-weight: bold; margin-top: 15px; }
+        .ep-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+        .btn-play { background: #00ff00; color: #000; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; }
+        .btn-play:hover { background: #fff; color: #000; }
     </style>
 </head>
 <body>
-    <canvas id="matrix"></canvas>
     <div class="container">
-        <h1>{{ data.title }}</h1>
-        <p style="text-align:center;">[ MODULE: {{ data.version }} ]</p>
-        
-        <div style="text-align: center; margin-bottom: 20px;">
-            <form method="POST">
-                <input type="text" name="url" placeholder="PASTE REELSHORT MOVIE URL HERE..." required>
-                <button type="submit">HACK</button>
-            </form>
-        </div>
+        <h1>🦉 {{ data.title }}</h1>
+        <p>Status: <strong>{{ data.status }}</strong></p>
+        <p>System: <code>{{ data.version }}</code></p>
+        <hr style="border-color: #00ff00;">
+
+        <form method="POST">
+            <input type="text" name="url" placeholder="Paste URL ReelShort di sini..." required>
+            <br>
+            <button type="submit" class="btn-submit">[ EXECUTE BREACH ]</button>
+        </form>
 
         {% if error %}
-        <div class="error">>> ERROR: {{ error }}</div>
+            <p class="error">[!] RALAT: {{ error }}</p>
         {% endif %}
+
+        {% if result %}
+            <div style="margin-top: 30px; text-align: left; padding: 15px; border: 1px dashed #00ff00;">
+                <h3 style="text-align: center;">TARGET: {{ result.title }}</h3>
+                <p style="font-size: 0.9em; color: #aaa;">{{ result.synopsis }}</p>
+                <p style="text-align: center;"><strong>Jumlah Episod: {{ result.episodes | length }}</strong></p>
+                
+                <div class="ep-grid">
+                    {% for ep in result.episodes %}
+                        <form action="/" method="POST" target="_blank">
+                            <input type="hidden" name="api_url" value="{{ ep.api_url }}">
+                            <button type="submit" class="btn-play">▶ EPS {{ ep.num }}</button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>        {% endif %}
 
         {% if result %}
         <div class="result-box">
