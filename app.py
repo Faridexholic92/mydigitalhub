@@ -90,9 +90,9 @@ def proxy():
 @app.route('/', methods=['GET', 'POST'])
 def home():
     data = {
-        "title": "FARIDEXHOLIC DIGITAL HUB",
+        "title": "FARIDEXHOLIC REELSHORT",
         "status": "WAITING FOR TARGET",
-        "version": "V18: OWL EDITION"
+        "version": "VIP VERSION"
     }
     
     result = None
@@ -127,3 +127,4 @@ def home():
 if __name__ == '__main__':
     # Buka port 5000, boleh diakses melalui localhost atau network yang sama
     app.run(host='0.0.0.0', port=5000, debug=True)
+
