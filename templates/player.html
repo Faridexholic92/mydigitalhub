@@ -1,16 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
-    <title>Stream Link</title>
-    <style>body{background:#000; color:#0f0; font-family:monospace; padding:50px; text-align:center;}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V18: OWL EDITION - STREAMING</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { background-color: #000; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
+        .player-container { max-width: 800px; margin: 0 auto; border: 2px solid #00ff00; padding: 10px; box-shadow: 0 0 15px #00ff00; background: #111; }
+        video { width: 100%; height: auto; outline: none; background: #000; }
+        .blink { animation: blinker 1.5s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
 </head>
 <body>
-    <h1>ACCESS GRANTED</h1>
-    <p>Copy link ini ke dalam IDM / 1DM / VLC:</p>
-    <div style="background:#111; padding:20px; border:1px solid #0f0; word-wrap: break-word;">
-        {{ link }}
+
+    <h2>🦉 <span class="blink">STREAMING ACTIVE</span> 🦉</h2>
+    
+    <div class="player-container">
+        <video id="video" controls autoplay></video>
     </div>
-    <br>
-    <a href="{{ link }}" style="color:white;">[ CLICK TO PLAY DIRECTLY ]</a>
+    
+    <p style="color: #888; font-size: 0.8em;">Menghubungkan ke server sasaran melalui proxy...</p>
+
+    <script>
+        var video = document.getElementById('video');
+        var videoSrc = "{{ link }}"; // Link proxy m3u8
+
+        if (Hls.isSupported()) {
+            var hls = new Hls({
+                debug: false,
+                // Pastikan HLS.js membenarkan rentas origin (cors)
+                xhrSetup: function(xhr, url) {
+                    xhr.withCredentials = false; 
+                }
+            });
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+            
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    console.error("HLS Ralat Fatal:", data);
+                }
+            });
+        } 
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Safari Native Support
+            video.src = videoSrc;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+    </script>
 </body>
 </html>
