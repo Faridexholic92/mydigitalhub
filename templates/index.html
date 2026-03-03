@@ -5,18 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ data.title }}</title>
     <style>
-        body { background-color: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; border: 1px solid #00ff00; padding: 20px; box-shadow: 0 0 10px #00ff00; }
+        body { 
+            background-color: #0a0a0a; 
+            color: #00ff00; 
+            font-family: 'Courier New', monospace; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+            overflow: hidden; /* Elakkan scrollbar untuk canvas matrix */
+        }
+        
+        /* Canvas Matrix diletak di latar belakang */
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .container { 
+            max-width: 800px; 
+            margin: 50px auto; 
+            border: 1px solid #00ff00; 
+            padding: 20px; 
+            box-shadow: 0 0 15px #00ff00; 
+            background-color: rgba(10, 10, 10, 0.85); /* Tambah sedikit gelap supaya teks nampak atas matrix */
+            position: relative;
+        }
+        
         input[type="text"] { width: 80%; padding: 10px; background: #000; color: #00ff00; border: 1px solid #00ff00; margin-bottom: 15px; }
         .btn-submit { background-color: #00ff00; color: #000; padding: 10px 20px; border: none; cursor: pointer; font-weight: bold; }
         .btn-submit:hover { background-color: #00cc00; }
-        .error { color: red; font-weight: bold; margin-top: 15px; }
+        .error { color: red; font-weight: bold; margin-top: 15px; text-shadow: 0 0 5px red; }
         .ep-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
         .btn-play { background: #00ff00; color: #000; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; }
         .btn-play:hover { background: #fff; color: #000; }
+        
+        .result-box {
+            margin-top: 30px; 
+            text-align: left; 
+            padding: 15px; 
+            border: 1px dashed #00ff00;
+        }
     </style>
 </head>
 <body>
+    
+    <canvas id="matrix"></canvas>
+
     <div class="container">
         <h1>🦉 {{ data.title }}</h1>
         <p>Status: <strong>{{ data.status }}</strong></p>
@@ -34,14 +72,15 @@
         {% endif %}
 
         {% if result %}
-            <div style="margin-top: 30px; text-align: left; padding: 15px; border: 1px dashed #00ff00;">
-                <h3 style="text-align: center;">TARGET: {{ result.title }}</h3>
-                <p style="font-size: 0.9em; color: #aaa;">{{ result.synopsis }}</p>
-                <p style="text-align: center;"><strong>Jumlah Episod: {{ result.episodes | length }}</strong></p>
+            <div class="result-box">
+                <h2 style="color:white; text-align: center;">TARGET: {{ result.title }}</h2>
+                <p style="color:#aaa; font-size:0.9em; text-align: center;">{{ result.synopsis[:150] }}...</p>
+                <p style="text-align: center; color: #00ff00;"><strong>Jumlah Episod: {{ result.episodes | length }}</strong></p>
                 
+                <h3 style="border-bottom: 1px solid red; padding-bottom: 5px;">EPISODES LIST</h3>
                 <div class="ep-grid">
                     {% for ep in result.episodes %}
-                        <form action="/" method="POST" target="_blank">
+                        <form action="/" method="POST" target="_blank" style="display:inline;">
                             <input type="hidden" name="api_url" value="{{ ep.api_url }}">
                             <button type="submit" class="btn-play">▶ EPS {{ ep.num }}</button>
                         </form>
@@ -50,47 +89,43 @@
             </div>
         {% endif %}
     </div>
-</body>
-</html>        {% endif %}
-
-        {% if result %}
-        <div class="result-box">
-            <h2 style="color:white;">TARGET: {{ result.title }}</h2>
-            <p style="color:#aaa; font-size:0.9em;">{{ result.synopsis[:150] }}...</p>
-            
-            <h3 style="border-bottom: 1px solid red;">EPISODES LIST</h3>
-            <div class="ep-grid">
-                {% for ep in result.episodes %}
-                <form method="POST" target="_blank" style="display:inline;">
-                    <input type="hidden" name="api_url" value="{{ ep.api_url }}">
-                    <button type="submit" class="ep-btn">EP {{ ep.num }}</button>
-                </form>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
 
     <script>
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        
+        // Tetapkan saiz canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
         const letters = '0123456789ABCDEF';
-        const matrix = letters.split('');
+        const matrixArray = letters.split('');
         const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = [];
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
         for(let x = 0; x < columns; x++) drops[x] = 1;
+
         function draw() {
+            // Latar belakang hitam separa lutsinar untuk kesan trail
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Teks berwarna merah
             ctx.fillStyle = '#ff0000';
             ctx.font = fontSize + 'px Courier New';
+            
             for(let i = 0; i < drops.length; i++) {
-                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                
+                // Reset drop ke atas secara rawak
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
                 drops[i]++;
             }
         }
